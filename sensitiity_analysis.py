@@ -1,6 +1,8 @@
 from fourier_transforms import fourier_coeffs, f_series, LagrangePoly    # helper functions
+from fourier_transforms import f_series2, f_residual
 from inerpolation_methods import whittaker_shannon_interpolation
 from scipy.signal import find_peaks
+from scipy.optimize import leastsq
 from collections import deque
 import numpy as np
 from matplotlib import pyplot as plt                                      # graphing utilities
@@ -28,17 +30,34 @@ peaks, _ = find_peaks(y_0, height=40)
 y_m, x_m = y_0[peaks[1]:peaks[2]], x_0[peaks[1]:peaks[2]]
 y_m1, x_m1 = y_0[peaks[2]:peaks[3]], x_0[peaks[2]:peaks[3]]
 y_mp, x_mp = y_0[peaks[1]:peaks[5]], x_0[peaks[1]:peaks[5]]
+x_m_new = np.linspace(min(x_m), max(x_m), 2500)
+y_m_new = (whittaker_shannon_interpolation(x_m_new, x_m, y_m))
 
 # plot_initial_signal_single(x_m, y_m)
+x_initial = np.ones(25)*2
+leastsq_x = leastsq(f_residual, x_initial, args=(x_m_new, y_m_new), maxfev=10000)
+print(leastsq_x[0][0])
+print("scipy.optimize.leastsq: ", leastsq_x[0])
+
+plt.plot(x_m_new, y_m_new, label="Data")
+plt.plot(x_m_new, f_series2(leastsq_x[0], x_m_new), label="optimize.leastsq")
+plt.xlabel("t")
+plt.legend(loc='upper right')
+plt.show()
+
+
+
+
+
+
 peak_dist = [x_0[peaks[i]] - x_0[peaks[i - 1]] for i in range(1, len(peaks))]
 period = x_0[peaks[2]] - x_0[peaks[1]]  # np.mean(peak_dist)
 
 
 # plot_initial_signal_single(x_f, f_series(a_0, a_k, b_k, x_f, 4, period))
 
-x_m_new = np.linspace(min(x_0), max(x_0), 1000)
-y_m_new = (whittaker_shannon_interpolation(x_m_new, x_0, y_0, period))
-plot_shannon_single(x_m_new, y_m_new, x_0, y_0)
+
+# plot_shannon_single(x_m_new, y_m_new, x_0, y_0)
 
 # x_f = np.linspace(min(x_m), max(x_m), len(x_m))
 # y_f = lp.interpolate(x_f)

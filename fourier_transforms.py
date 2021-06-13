@@ -102,4 +102,51 @@ class LagrangePoly:
         return np.sum(b, axis=0)
 
 
+def f_series2(x: np.ndarray,
+              t: any) -> float:
+
+    """
+    Evaluation of the associated function at instances t from fourier series.
+    f(t) ~= a0/2+ sum_{k=1}^{N} ( a_k*cos(2*pi*k*t/T) + b_k*sin(2*pi*k*t/T) )
+
+    Parameters:
+    ________
+    x: coefficient for least square fit
+    t: instance of function evaluation
+    period: Period of periodic signal
+
+    Return:
+    ______
+    S: f(t) Evaluations of associated function
+    """
+    # Interpretation of optimization parameters
+    a_0, a_k, b_k  = x[0], x[1:5], x[5:9]
+    a_phi, b_phi = x[9:13], x[13:17]
+    freqs_a, freqs_b = x[17:21], x[21:25]
+    # function evaluation
+    f = [(a_k[i] * np.cos(2 * np.pi * i * t * freqs_a[i] + a_phi[i]) + b_k[i]
+          * np.sin(2 * np.pi * i * t * freqs_b[i] + b_phi[i])) for i in range(0, len(a_k) - 1)]
+    f = a_0 / 2 + sum(f)
+
+    return f
+
+
+def f_residual(x: np.ndarray,
+               t: np.ndarray,
+               d: np.ndarray) -> np.ndarray:
+
+    """
+    Parameters:
+    _________
+    x: np.ndarray optimization parameters for the optimizer
+    t: instances to be evaluated with associated function
+    d: measured data (real)
+
+    Return:
+    ______
+    residual: residual value of estimation vs model
+    """
+    residual = d - f_series2(x, t)
+
+    return residual
 

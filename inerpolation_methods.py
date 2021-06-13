@@ -4,7 +4,6 @@ import numpy as np
 def whittaker_shannon_interpolation(x: np.ndarray,
                                     xp: np.ndarray,
                                     fp: np.ndarray,
-                                    period: float,
                                     left=None,
                                     right=None):
     """
