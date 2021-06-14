@@ -22,7 +22,6 @@ def whittaker_shannon_interpolation(x: np.ndarray,
     """
 
     u = np.resize(x, (len(xp), len(x)))
-    print(np.size(u))
 
     v = (xp - u.T) / (xp[1] - xp[0])
     m = fp * np.sinc(v)

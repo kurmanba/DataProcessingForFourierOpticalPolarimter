@@ -1,6 +1,7 @@
 from matplotlib import pyplot as plt
 from matplotlib import ticker, get_backend, rc
 import numpy as np
+from scipy.signal import find_peaks
 
 
 grey, gold, lightblue, green = '#808080', '#cab18c', '#0096d6', '#008367'
@@ -79,7 +80,6 @@ def plot_initial_signal_single(x: np.ndarray,
     markerline, stemline, baseline, = ax.stem(x, y, linefmt='#CD2305', markerfmt='o', basefmt='k.')
     plt.setp(stemline, linewidth=.5)
     plt.setp(markerline, markersize=.5)
-
     ax.set_xlim([min(x) * 1.0, max(x) * 1.0])
     ax.set_ylim([-max(y) * 0.2, max(y) * 1.2])
     ax.set_title('Data from the POM', fontsize=fontsize)
@@ -95,6 +95,7 @@ def plot_shannon_single(x: np.ndarray,
                         x_0: np.ndarray,
                         y_0: np.ndarray) -> None:
 
+    peaks, _ = find_peaks(y, height=40)
     fig, ax = plt.subplots()
     ax.grid(True, **grid_params)
 
@@ -114,9 +115,26 @@ def plot_shannon_single(x: np.ndarray,
     # ax.xaxis.set_major_locator(loc)
 
     ax.grid(True, **grid_params)
+    markerline, stemline, baseline, = ax.stem(x, y, linefmt='#CD2305', markerfmt='o', basefmt='k.')
+    plt.setp(stemline, linewidth=.5)
+    plt.setp(markerline, markersize=.5)
+    # plt.plot(x, y, color='#CD2305', linewidth=0.9)
+    #plt.scatter(x_0, y_0, s=3, marker='o')
+    # arrow for periods
+    arrowx = np.linspace(x[peaks[0]], x[peaks[1]], 100)
+    arrowy = np.ones(len(arrowx))*49
 
-    plt.plot(x, y, color='#CD2305', linewidth=0.9)
-    plt.scatter(x_0, y_0, s=7, marker='o')
+    plt.scatter(x[peaks[0:2]], y[peaks[0:2]], s=7, marker='p', color=darkblue)
+    plt.plot(arrowx, arrowy, color=darkblue, linewidth=.5)
+    ax.text(4.6, 50.65, 'T1', color='darkblue', fontsize=fontsize)
+
+    arrowx1 = np.linspace(x[peaks[0]+8], x[peaks[1]+8], 100)
+    arrowy1 = np.ones(len(arrowx1))*16
+
+    plt.scatter(x[peaks[0:2]+8], y[peaks[0:2]+8], s=7, marker='p', color=darkblue)
+    plt.plot(arrowx1, arrowy1, color=darkblue, linewidth=.5)
+    ax.text(4.6, 18, 'T2', color='darkblue', fontsize=fontsize)
+
     ax.set_xlim([min(x) * 1.0, max(x) * 1.0])
     ax.set_ylim([-max(y) * 0.2, max(y) * 1.2])
     ax.set_title('Whittaker–Shannon interpolation', fontsize=fontsize)

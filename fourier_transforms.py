@@ -124,8 +124,8 @@ def f_series2(x: np.ndarray,
     a_phi, b_phi = x[9:13], x[13:17]
     freqs_a, freqs_b = x[17:21], x[21:25]
     # function evaluation
-    f = [(a_k[i] * np.cos(2 * np.pi * i * t * freqs_a[i] + a_phi[i]) + b_k[i]
-          * np.sin(2 * np.pi * i * t * freqs_b[i] + b_phi[i])) for i in range(0, len(a_k) - 1)]
+    f = [(a_k[i - 1] * np.cos(2 * np.pi * i * t * freqs_a[0] + a_phi[i - 1]) + b_k[i - 1]
+          * np.sin(2 * np.pi * i * t * freqs_a[0] + b_phi[i - 1])) for i in range(1, len(a_k) + 1)]
     f = a_0 / 2 + sum(f)
 
     return f
@@ -147,6 +147,26 @@ def f_residual(x: np.ndarray,
     residual: residual value of estimation vs model
     """
     residual = d - f_series2(x, t)
+    return residual
+
+
+def f_annealing(x: np.ndarray,
+                t: np.ndarray,
+                d: np.ndarray) -> float:
+
+    """
+    Parameters:
+    _________
+    x: np.ndarray optimization parameters for the optimizer
+    t: instances to be evaluated with associated function
+    d: measured data (real)
+
+    Return:
+    ______
+    residual: residual value of estimation vs model
+    """
+
+    residual = float(sum((d - f_series2(x, t))**2))
 
     return residual
 
