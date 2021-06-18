@@ -2,7 +2,7 @@ from matplotlib import pyplot as plt
 from matplotlib import ticker, get_backend, rc
 import numpy as np
 from scipy.signal import find_peaks
-
+from matplotlib.ticker import (MultipleLocator, AutoMinorLocator)
 
 grey, gold, lightblue, green = '#808080', '#cab18c', '#0096d6', '#008367'
 pink, yellow, orange, purple = '#ef7b9d', '#fbd349', '#ffa500', '#a35cff'
@@ -141,4 +141,36 @@ def plot_shannon_single(x: np.ndarray,
     plt.xlabel("Time [s]")
     plt.ylabel("Intensity Raw")
     plt.savefig("shannon.jpeg")
+    plt.show()
+
+
+@set_rc
+def plot_detected_intensity(x: np.ndarray,
+                            y: np.ndarray) -> None:
+
+    fig, ax = plt.subplots()
+    ax.spines['left'].set_linewidth(0.3)
+    ax.spines['bottom'].set_linewidth(0.3)
+    ax.spines['right'].set_color('none')
+    ax.spines['top'].set_color('none')
+
+    ax.grid(True, **grid_params)
+    plt.plot(x, y, color=darkblue, linewidth=2)
+    ax.text(4.6, 18, 'T2', color='darkblue', fontsize=fontsize)
+
+    ax.set_xlim([min(x) * 1.0, max(x) * 1.0])
+    ax.set_ylim([-max(y) * 0.2, max(y) * 1.2])
+    ax.set_title('w1/w2 = 5', fontsize=fontsize)
+    plt.xlabel("Time [s]")
+    plt.ylabel("Intensity Raw")
+
+    ax.xaxis.set_major_locator(MultipleLocator(1))
+    ax.xaxis.set_major_formatter('{x:.0f}')
+    ax.xaxis.set_minor_locator(MultipleLocator(0.2))
+
+    ax.yaxis.set_major_locator(MultipleLocator(1))
+    ax.yaxis.set_major_formatter('{x:.0f}')
+    ax.yaxis.set_minor_locator(MultipleLocator(0.5))
+
+    plt.savefig("2.jpeg")
     plt.show()

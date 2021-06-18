@@ -1,5 +1,6 @@
 from collections import defaultdict
 import matplotlib.pyplot as plt
+from plot_helper import plot_detected_intensity
 from tqdm import tqdm
 import numpy as np
 
@@ -130,9 +131,9 @@ def generate_rotation(t: np.ndarray,
 
 
 z = np.zeros((360, 360))
-time = np.arange(0, 3, 0.001)
-omega_1 = 30
-omega_2 = 10
+time = np.arange(0, 1, 0.0001)
+omega_1 = 360
+omega_2 = 360/3
 theta1 = generate_rotation(time, omega_1)
 theta2 = generate_rotation(time, omega_2)
 
@@ -152,8 +153,7 @@ for i, j in enumerate(time):
     l = transfer_matrix(theta1[i], theta2[i], s_0)[0]
     b.append(l)
 
-plt.plot(time, b)
-plt.show()
+plot_detected_intensity(time, b)
 # z = np.reshape(b, (360, 360))
 # xx, yy = np.meshgrid(theta1, theta2, sparse=True)
 # h = plt.contourf(theta1, theta2, z)
