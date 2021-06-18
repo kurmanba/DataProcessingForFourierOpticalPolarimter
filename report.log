@@ -12,3 +12,4 @@
 2021-06-10 13:28:11,877 - pyswarms.single.global_best - INFO - Optimization finished | best cost: 0.0, best pos: [ 2.58285349e-09 -4.80704722e-10]
 2021-06-10 13:33:34,902 - pyswarms.single.global_best - INFO - Optimize for 1000 iters with {'c1': 0.5, 'c2': 0.5, 'w': 0.9}
 2021-06-10 13:33:35,335 - pyswarms.single.global_best - INFO - Optimization finished | best cost: 0.0, best pos: [ 5.98869559e-10 -2.44117940e-10]
+2021-06-15 01:29:59,425 - tensorflow - WARNING - The dtype of the target tensor must be floating (e.g. tf.float32) when calling GradientTape.gradient, got tf.int32

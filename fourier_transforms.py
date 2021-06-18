@@ -1,13 +1,11 @@
 import numpy as np
-import pyswarms as ps  # optimizers
-from pyswarms.utils.functions import single_obj as fx
 
 
 def fourier_coeffs(f: np.ndarray,
                    return_complex=False):
 
     """
-    Calculates the first 2*N+1 Fourier series coefficients of a periodic function.
+    Calculates Fourier series coefficients of a periodic function.
 
     Given a periodic, function f(t) with period T. coefficients:
     a0, {a1,a2,...},{b1,b2,...} are calculated such that:
@@ -73,8 +71,9 @@ def f_series(a_0: float,
     ______
     S: f(t) Evaluation of associated function
     """
-    f = [(a_k[i] * np.cos(2 * np.pi * i * t / period) + b_k[i]
-          * np.sin(2 * np.pi * i * t / period)) for i in range(0, order)]
+
+    f = [(a_k[i - 1] * np.cos(2 * np.pi * i * t / period) + b_k[i - 1]
+          * np.sin(2 * np.pi * i * t / period)) for i in range(1, order+1)]
     f = a_0 / 2 + sum(f)
 
     return f
@@ -121,11 +120,11 @@ def f_series2(x: np.ndarray,
     """
     # Interpretation of optimization parameters
     a_0, a_k, b_k  = x[0], x[1:5], x[5:9]
-    a_phi, b_phi = x[9:13], x[13:17]
-    freqs_a, freqs_b = x[17:21], x[21:25]
+    freq = x[9]
+    phi = 90
     # function evaluation
-    f = [(a_k[i - 1] * np.cos(2 * np.pi * i * t * freqs_a[0] + a_phi[i - 1]) + b_k[i - 1]
-          * np.sin(2 * np.pi * i * t * freqs_a[0] + b_phi[i - 1])) for i in range(1, len(a_k) + 1)]
+    f = [(a_k[i - 1] * np.cos(2 * np.pi * i * t * freq + phi) + b_k[i - 1]
+          * np.sin(2 * np.pi * i * t * freq + phi)) for i in range(1, len(a_k) + 1)]
     f = a_0 / 2 + sum(f)
 
     return f
@@ -153,6 +152,27 @@ def f_residual(x: np.ndarray,
 def f_annealing(x: np.ndarray,
                 t: np.ndarray,
                 d: np.ndarray) -> float:
+
+    """
+    Parameters:
+    _________
+    x: np.ndarray optimization parameters for the optimizer
+    t: instances to be evaluated with associated function
+    d: measured data (real)
+
+    Return:
+    ______
+    residual: residual value of estimation vs model
+    """
+
+    residual = float(sum((d - f_series2(x, t))**2))
+
+    return residual
+
+
+def f_sgd(x: np.ndarray,
+          t: np.ndarray,
+          d: np.ndarray) -> float:
 
     """
     Parameters:
