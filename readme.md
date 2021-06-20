@@ -1,4 +1,4 @@
-**Optical Polarimetry**
+#**Optical Polarimetry**
 
 Following  Project is an attempt to analyse optical microscope with 
 compensator (rotating wave pallets)
@@ -6,7 +6,7 @@ compensator (rotating wave pallets)
 
 
 
-**Contents**
+##**Contents**
 
 `Muller Standard Elements`
 

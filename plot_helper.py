@@ -4,6 +4,7 @@ import numpy as np
 from scipy.signal import find_peaks
 from matplotlib.ticker import (MultipleLocator, AutoMinorLocator)
 
+
 grey, gold, lightblue, green = '#808080', '#cab18c', '#0096d6', '#008367'
 pink, yellow, orange, purple = '#ef7b9d', '#fbd349', '#ffa500', '#a35cff'
 darkblue, brown, red = '#004065', '#731d1d', '#E31937'
@@ -36,6 +37,16 @@ def set_rc(func):
         rc('figure', dpi=500)
         rc('axes', axisbelow=True, titlesize=5)
         rc('lines', linewidth=0.5)
+        func(*args, **kwargs)
+    return wrapper
+
+
+def set_rc2(func):
+    def wrapper(*args, **kwargs):
+        rc('font', family='serif', size=fontsize)
+        # rc('figure', dpi=500)
+        rc('axes', axisbelow=True, titlesize=5)
+        rc('lines', linewidth=1.5)
         func(*args, **kwargs)
     return wrapper
 
@@ -164,13 +175,30 @@ def plot_detected_intensity(x: np.ndarray,
     plt.xlabel("Time [s]")
     plt.ylabel("Intensity Raw")
 
-    ax.xaxis.set_major_locator(MultipleLocator(1))
+    ax.xaxis.set_major_locator(MultipleLocator(0.1))
     ax.xaxis.set_major_formatter('{x:.0f}')
-    ax.xaxis.set_minor_locator(MultipleLocator(0.2))
+    ax.xaxis.set_minor_locator(MultipleLocator(0.01))
 
     ax.yaxis.set_major_locator(MultipleLocator(1))
     ax.yaxis.set_major_formatter('{x:.0f}')
     ax.yaxis.set_minor_locator(MultipleLocator(0.5))
 
     plt.savefig("2.jpeg")
+    plt.show()
+
+
+@set_rc2
+def plot_ratios(t:np.ndarray,
+                max_ratio: int,
+                results: dict):
+
+    for i in range(1, max_ratio):
+        plt.subplot(max_ratio - 1, 1, i)
+        plt.title('Angular Speed Ratio: {}'.format(i), size=fontsize)
+        plt.plot(t, results[i - 1])
+        plt.ylabel("Intensity Raw")
+
+    # plt.stem(X)
+    plt.xlabel("Time [s]")
+    plt.savefig("ratios.jpeg")
     plt.show()
