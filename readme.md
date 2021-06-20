@@ -1,3 +1,4 @@
+sketch of readme nowhere ready to be understandable yet
 #**Optical Polarimetry**
 
 Following  Project is an attempt to analyse optical microscope with 
