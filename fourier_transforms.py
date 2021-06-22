@@ -121,7 +121,7 @@ def f_series2(x: np.ndarray,
     # Interpretation of optimization parameters
     a_0, a_k, b_k  = x[0], x[1:5], x[5:9]
     freq = x[9]
-    phi = 90
+    phi = 0
     # function evaluation
     f = [(a_k[i - 1] * np.cos(2 * np.pi * i * t * freq + phi) + b_k[i - 1]
           * np.sin(2 * np.pi * i * t * freq + phi)) for i in range(1, len(a_k) + 1)]

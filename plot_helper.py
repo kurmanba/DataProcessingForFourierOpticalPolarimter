@@ -45,7 +45,7 @@ def set_rc2(func):
     def wrapper(*args, **kwargs):
         rc('font', family='serif', size=fontsize)
         # rc('figure', dpi=500)
-        rc('axes', axisbelow=True, titlesize=5)
+        rc('axes', axisbelow=True, titlesize=12)
         rc('lines', linewidth=1.5)
         func(*args, **kwargs)
     return wrapper
@@ -193,12 +193,19 @@ def plot_ratios(t:np.ndarray,
                 results: dict):
 
     for i in range(1, max_ratio):
-        plt.subplot(max_ratio - 1, 1, i)
+
+        ax = plt.subplot((max_ratio - 1)//2, (max_ratio - 1)//2, i)
+        ax.spines['left'].set_linewidth(0.3)
+        ax.spines['bottom'].set_linewidth(0.3)
+        ax.spines['right'].set_color('none')
+        ax.spines['top'].set_color('none')
         plt.title('Angular Speed Ratio: {}'.format(i), size=fontsize)
         plt.plot(t, results[i - 1])
         plt.ylabel("Intensity Raw")
+        plt.tight_layout(pad=.5)
+        plt.grid(False)
 
     # plt.stem(X)
     plt.xlabel("Time [s]")
-    plt.savefig("ratios.jpeg")
+    plt.savefig("ratios2.jpeg")
     plt.show()
