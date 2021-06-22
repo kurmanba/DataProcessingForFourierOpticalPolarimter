@@ -6,33 +6,25 @@ def fourier_coeffs(f: np.ndarray,
 
     """
     Calculates Fourier series coefficients of a periodic function.
-
     Given a periodic, function f(t) with period T. coefficients:
     a0, {a1,a2,...},{b1,b2,...} are calculated such that:
 
     f(t) ~= a0/2+ sum_{k=1}^{N} ( a_k*cos(2*pi*k*t/T) + b_k*sin(2*pi*k*t/T) )
 
-    If return_complex is set to True complex coefficients are returned:
-    {c0,c1,c2,...}
-    such that:
-
-    f(t) ~= sum_{k=-N}^{N} c_k * exp(i*2*pi*k*t/T)
-    where we define c_{-n} = complex_conjugate(c_{n})
-
     Parameters:
     ----------
     f : the periodic function, a callable like f(t)
     T : the period of the function f, so that f(0)==f(T)
-    N_max : the function will return the first N_max + 1 Fourier coeff.
+    N_max : the function will return the first N_max + 1 Fourier coeffs.
 
     Returns:
     -------
     if return_complex == False, the function returns:
 
     a0 : float
-    a,b : numpy float arrays describing respectively the cosine and sine coeff.
+    a,b : numpy float arrays describing respectively the cosine and sine coeffs.
     if return_complex == True, the function returns:
-    c : numpy 1-dimensional complex-valued array of size N+1
+    c : numpy 1-dimensional complex-valued array of size N+1  if return_complex=True
     """
 
     y = np.fft.rfft(f) / f.size
@@ -105,12 +97,11 @@ def f_series2(x: np.ndarray,
               t: any) -> float:
 
     """
-    Evaluation of the associated function at instances t from fourier series.
-    f(t) ~= a0/2+ sum_{k=1}^{N} ( a_k*cos(2*pi*k*t/T) + b_k*sin(2*pi*k*t/T) )
+    Same as fourier series except designed for optimization tasks.
 
     Parameters:
     ________
-    x: coefficient for least square fit
+    x: Variable vectors for objective function (coefficient)
     t: instance of function evaluation
     period: Period of periodic signal
 
@@ -152,27 +143,6 @@ def f_residual(x: np.ndarray,
 def f_annealing(x: np.ndarray,
                 t: np.ndarray,
                 d: np.ndarray) -> float:
-
-    """
-    Parameters:
-    _________
-    x: np.ndarray optimization parameters for the optimizer
-    t: instances to be evaluated with associated function
-    d: measured data (real)
-
-    Return:
-    ______
-    residual: residual value of estimation vs model
-    """
-
-    residual = float(sum((d - f_series2(x, t))**2))
-
-    return residual
-
-
-def f_sgd(x: np.ndarray,
-          t: np.ndarray,
-          d: np.ndarray) -> float:
 
     """
     Parameters:

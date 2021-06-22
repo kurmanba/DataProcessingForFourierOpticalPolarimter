@@ -66,8 +66,9 @@ def plot_initial_signal_double(x: np.ndarray,
 
 
 @set_rc
-def plot_initial_signal_single(x: np.ndarray,
-                               y: np.ndarray) -> None:
+def plot_initial_signal(x: np.ndarray,
+                        y: np.ndarray) -> None:
+
     fig, ax = plt.subplots()
     ax.grid(True, **grid_params)
 

@@ -1,7 +1,7 @@
 from fourier_transforms import fourier_coeffs, f_series, LagrangePoly     # helper functions
 from fourier_transforms import f_series2, f_residual, f_annealing, f_sgd
 from inerpolation_methods import whittaker_shannon_interpolation
-from muller_standard_elements import run_simulation
+from muller_calculations import run_simulation
 from scipy.signal import find_peaks
 from scipy.fftpack import fft, ifft, fftshift
 from scipy.optimize import leastsq, basinhopping, differential_evolution
@@ -28,11 +28,10 @@ X = fft(y_m_new[2], axis=0)
 X = 2*np.abs(X) / (sampling_rate * t_experiment)
 plt.plot(X)
 plt.show()
-plt.plot(time, y_m_new[1])
 
 for shift in tqdm(range(3, 4)):
 
-    y_m_new = y_m_new[shift]
+    y_m_new = y_m_new[1]
     x_initial_basin = np.ones(10)*0
     func = lambda x: f_annealing(x, x_m_new, y_m_new)
     minimizer_kwargs = {"method": "L-BFGS-B"}
@@ -51,12 +50,16 @@ print(freqs)
 # plt.plot(a_1bs)
 # plt.plot(a_2bs)
 # plt.show()
+a_0, a_k, b_k = fourier_coeffs(y_m_new)
+
 
 plt.plot(x_m_new, f_series2(leastsq_x[0], x_m_new), label="Fourier Series Levenberg-Marquardt")
 plt.plot(x_m_new, f_series2(basinhop.x, x_m_new), label="Fourier Series Heuristics (Simulated Annealing)")
 # plt.plot(x_m_new, f_series2(var.numpy, x_m_new), label="Fourier Series Heuristics (SGD)")
 
-plt.scatter(x_m_new, y_m_new, s=2, marker='o', label="Resampled Data (Whittaker-Shannon)")
+# plt.scatter(x_m_new, y_m_new[3], s=2, marker='o', label="Resampled Data (Whittaker-Shannon)")
+plt.plot(x_m_new, y_m_new, label=" Data")
+
 plt.xlabel("t")
 plt.ylabel("Intensity")
 plt.legend(loc='upper right')
