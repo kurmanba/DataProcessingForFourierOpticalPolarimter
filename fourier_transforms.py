@@ -3,7 +3,6 @@ import numpy as np
 
 def fourier_coeffs(f: np.ndarray,
                    return_complex=False):
-
     """
     Calculates Fourier series coefficients of a periodic function.
     Given a periodic, function f(t) with period T. coefficients:
@@ -21,10 +20,9 @@ def fourier_coeffs(f: np.ndarray,
     -------
     if return_complex == False, the function returns:
 
-    a0 : float
-    a,b : numpy float arrays describing respectively the cosine and sine coeffs.
-    if return_complex == True, the function returns:
-    c : numpy 1-dimensional complex-valued array of size N+1  if return_complex=True
+    a0 : coefficient
+    a,b : coeffs describing harmonics of the cosines and sines.
+    c : complex-valued coeffs if return_complex=True
     """
 
     y = np.fft.rfft(f) / f.size
@@ -46,7 +44,6 @@ def f_series(a_0: float,
              t: float,
              order: int,
              period: float):
-
     """
     Evaluation of the associated function at instance t from fourier series.
     f(t) ~= a0/2+ sum_{k=1}^{N} ( a_k*cos(2*pi*k*t/T) + b_k*sin(2*pi*k*t/T) )
@@ -71,31 +68,8 @@ def f_series(a_0: float,
     return f
 
 
-class LagrangePoly:
-
-    def __init__(self,
-                 x,
-                 y):
-        self.n = len(x)
-        self.x = np.array(x)
-        self.y = np.array(y)
-
-    def basis(self,
-              x,
-              j):
-        b = [(x - self.x[m]) / (self.x[j] - self.x[m])
-             for m in range(self.n) if m != j]
-        return np.prod(b, axis=0) * self.y[j]
-
-    def interpolate(self,
-                    x):
-        b = [self.basis(x, j) for j in range(self.n)]
-        return np.sum(b, axis=0)
-
-
 def f_series2(x: np.ndarray,
               t: any) -> float:
-
     """
     Same as fourier series except designed for optimization tasks.
 
@@ -124,7 +98,6 @@ def f_series2(x: np.ndarray,
 def f_residual(x: np.ndarray,
                t: np.ndarray,
                d: np.ndarray) -> np.ndarray:
-
     """
     Parameters:
     _________
@@ -143,7 +116,6 @@ def f_residual(x: np.ndarray,
 def f_annealing(x: np.ndarray,
                 t: np.ndarray,
                 d: np.ndarray) -> float:
-
     """
     Parameters:
     _________
