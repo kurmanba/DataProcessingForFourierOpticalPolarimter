@@ -1,19 +1,25 @@
-sketch of readme nowhere ready to be understandable yet
+sketch of readme
+
+nowhere ready to be understandable yet
+
 #**Optical Polarimetry**
 
-Following  Project is an attempt to analyse optical microscope with 
-compensator (rotating wave pallets)
-
-
+In this project analysis of optical microscope with 
+compensator (rotating wave plates) could be found. Multivariate model
+of the optical microscope was realized using Mueller calculus. Inverse 
+solution to the model represents optical properties of the
+sample. 
 
 
 ##**Contents**
 
-`Muller Standard Elements`
+`Mueller Calculations`
 
-In this section muller matrix for standard elements like `Wavepallet`,
+In this section Mueller matrix for standard elements like `Wavepallet`,
 `Linear Polarizer` and operators like `Rotation` and numerical operations
-like `computing transfer matrix` for stoke vector could be found.
+like `computing transfer matrix` for stoke vector could be found. 
+Digital model of the setup could be changed to add additional manipulations
+to the signal.
 
 `Interpolation Methods`
 
@@ -21,9 +27,16 @@ In this section discrete measurements obtained from the instrument could be
 approximated by various `Interpolation` methods. (_sinc interpolation_, _Polynomial
 interpolations_, _etc_)
 
+`Maximum Likelihood`
+
+Yet to be realized... this section is necessary to represent the error bounds
+for the inverse solution representing Mueller matrix. Due to systematic uncertainties
+in the experimental setup and noise interpretation of the signal is the most
+important part of the project.
+
 `Fourier Transforms`
 
-In this section we perform fourier transform with various means.....
+Harmonics of the signal 
 
 `Optimizers`
 

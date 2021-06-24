@@ -7,7 +7,6 @@ class MullerOperators:
     The class contains dictionary with Mueller matrix of passive
     optical elements and can imitate functionality of PSG and PSA.
     """
-
     def __init__(self, teta, sigma, pl_type):
 
         self.teta, self.sigma, self.pl_type = teta, sigma, pl_type
@@ -59,7 +58,7 @@ class MullerOperators:
                                     [0, 0, 0, 0],
                                     [0, 0, 0, 0]], np.float64)
 
-        # additional elements should be added here to be used in the simulation
+        # Additional elements should be added here to be used in the simulation
         muller['M_x'] = np.array([[1, 0, 0, 0],
                                   [0, 1, 0, 0],
                                   [0, 0, 1, 0],
@@ -72,7 +71,6 @@ def transfer_matrix(theta1: any,
                     retardance1: any,
                     retardance2: any,
                     incident: np.ndarray) -> np.ndarray:    # Muller matrix of the sample must be added
-
     """
     This function uses muller operations from the
     class Muller_operators and imitates behavior of
@@ -100,7 +98,7 @@ def transfer_matrix(theta1: any,
     s_out = p_2 @ w_2 @ w_1 @ p_1 @ incident
 
     if s_out[0] != np.sqrt(s_out[1]**2 + s_out[2]**2 + s_out[3]**2):
-        print("Stoke Vector is corrupted during transformation!")
+        print(" Stoke Vector is corrupted during transformation! ")
 
     return s_out[0]
 
@@ -131,6 +129,20 @@ def run_simulation(t_experiment: float,
                    s_0: np.ndarray,
                    omega_1: float,
                    omega_2: float) -> tuple:                                    # Inputs are fixed for now
+    """
+    Function calculates angle of incidence based on angular rotation
+    Parameters:
+    __________
+    t_experiment: Duration of the experiment.
+    sampling_rate: Sampling frequency of the camera.
+    s_0: Incident light stoke vector.
+    omega_1: Angular speed of PSG.
+    omega_2: Angular speed of PSA.
+
+    Return:
+    ______
+    ccd: Detected intensity.
+    """
 
     t_array = np.arange(0, t_experiment, 1/(sampling_rate * t_experiment))
     ccd_s = []                                                                  # Signal sampled by camera
@@ -142,5 +154,3 @@ def run_simulation(t_experiment: float,
         ccd_s.append(transfer_matrix(theta1[i], theta2[i], 133, 71, s_0))        # This needs to be VECTORIZED later on
 
     return ccd_s, t_array
-
-
