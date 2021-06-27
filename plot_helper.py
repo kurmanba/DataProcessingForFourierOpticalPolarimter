@@ -1,6 +1,8 @@
 from matplotlib import pyplot as plt
 from matplotlib import ticker, get_backend, rc
 import numpy as np
+from fourier_transforms import *
+from collections import defaultdict
 from scipy.signal import find_peaks
 from matplotlib.ticker import (MultipleLocator, AutoMinorLocator)
 
@@ -189,9 +191,9 @@ def plot_detected_intensity(x: np.ndarray,
 
 
 @set_rc2
-def plot_ratios(t:np.ndarray,
+def plot_ratios(t: np.ndarray,
                 max_ratio: int,
-                results: dict):
+                results: defaultdict):
 
     for i in range(1, max_ratio):
 
@@ -201,12 +203,28 @@ def plot_ratios(t:np.ndarray,
         ax.spines['right'].set_color('none')
         ax.spines['top'].set_color('none')
         plt.title('Angular Speed Ratio: {}'.format(i), size=fontsize)
-        plt.plot(t, results[i - 1])
+        plt.plot(t, results[i])
         plt.ylabel("Intensity Raw")
         plt.tight_layout(pad=.5)
         plt.grid(False)
 
     # plt.stem(X)
     plt.xlabel("Time [s]")
-    plt.savefig("ratios2.jpeg")
+    plt.savefig("ratios1.jpeg")
+    plt.show()
+
+
+@set_rc2
+def plot_mc_fits(variables_vector1: np.ndarray,
+                 variables_vector2: np.ndarray,
+                 t: np.ndarray,
+                 results: defaultdict,
+                 harmonics: int) -> None:
+
+    plt.plot(t, f_series2(variables_vector1, t), label="Fourier Series Heuristics (Basinhopping)")
+    plt.plot(t, f_series2(variables_vector2, t), label="Fourier Series Levenberg-Marquardt")
+    plt.scatter(t, results[harmonics], label=" Data")
+    plt.xlabel("t")
+    plt.ylabel("Intensity")
+    plt.legend(loc='upper right')
     plt.show()

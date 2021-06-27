@@ -146,11 +146,23 @@ def run_simulation(t_experiment: float,
 
     t_array = np.arange(0, t_experiment, 1/(sampling_rate * t_experiment))
     ccd_s = []                                                                  # Signal sampled by camera
+    ccd_sn = []                                                                 # Signal sampled by camera
     theta1 = generate_rotation(t_array, omega_1, inverse=False)
     theta2 = generate_rotation(t_array, omega_2, inverse=False)
 
+    noise = np.random.normal(0, 0.1, len(theta1))
+    theta1_n = theta1 + noise
+    theta2_n = theta2 + noise
+
     for i, j in enumerate(t_array):                                              # This needs to be VECTORIZED later on
 
-        ccd_s.append(transfer_matrix(theta1[i], theta2[i], 133, 71, s_0))        # This needs to be VECTORIZED later on
+        retardance1 = 133 + np.random.normal(0, 0.01, 1)
+        retardance2 = 71 + np.random.normal(0, 0.01, 1)
+
+        ccd_s.append(transfer_matrix(theta1_n[i],
+                                     theta2_n[i],
+                                     retardance1,
+                                     retardance2,
+                                     s_0))                                       # This needs to be VECTORIZED later on
 
     return ccd_s, t_array
