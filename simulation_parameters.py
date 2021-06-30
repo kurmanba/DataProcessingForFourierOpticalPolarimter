@@ -8,8 +8,8 @@ def extract_parameters():
 
     # 1. Time Variables
     # _________________
-    t_experiment = 1                                                      # Duration of simulation [seconds]
-    sampling_rate = 1000                                                  # CCD [frames/second] or 1/s_r [Hz]
+    t_experiment = .1                                                      # Duration of simulation [seconds]
+    sampling_rate = 100000                                                  # CCD [frames/second] or 1/s_r [Hz]
     # 2. Incoming light properties
     # ____________________________
     s_0 = [1, 0, 0, 0]                                                    # Incident light in a stoke vector form
@@ -19,7 +19,7 @@ def extract_parameters():
     retardance_wp_2 = 71                                                  # Phase shift induced by optics (wave plate)
     # 4. Characteristics of optical setup (active elements)
     # ______________________________________________________
-    omega_1 = 30                                                           # Angular speed of wave plate [deg/second]
+    omega_1 = 360                                                         # Angular speed of wave plate [deg/second]
     omega_2 = 15                                                          # Angular speed of wave plate [deg/second]
     # 5. Additional Parameters to add later on
     # ______________________________________________________

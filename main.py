@@ -9,7 +9,7 @@ import numpy as np
 
 
 t_experiment, sampling_rate, s_0, omega_1, omega_2 = extract_parameters()                       # Extract parameters
-ratios = np.arange(1, 5, 1)
+ratios = np.arange(1, 40, 1)
 store_results = defaultdict()
 store_results_noise = defaultdict()
 
@@ -31,7 +31,7 @@ func = lambda x: f_annealing(x, t, store_results[harmonics])
 optimized = basinhopping(func,
                          x_initial_basin,
                          minimizer_kwargs={"method": "L-BFGS-B"},
-                         niter=3000,
+                         niter=300,
                          disp=False)
 
 leastsq_x = leastsq(f_residual,

@@ -150,7 +150,7 @@ def run_simulation(t_experiment: float,
     theta1 = generate_rotation(t_array, omega_1, inverse=False)
     theta2 = generate_rotation(t_array, omega_2, inverse=False)
 
-    noise = np.random.normal(0, 0.1, len(theta1))
+    noise = np.random.normal(0, 0.001, len(theta1))
     theta1_n = theta1 + noise
     theta2_n = theta2 + noise
 
