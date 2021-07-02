@@ -18,7 +18,7 @@ for i in tqdm(ratios):
 
 
 for i in ratios:
-    plt.plot(t, store_results[i] + 0.5*i)
+    plt.plot(t, store_results[i] + 0.125*i)
 
 plt.show()
 

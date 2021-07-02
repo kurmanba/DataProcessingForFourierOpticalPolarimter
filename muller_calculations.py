@@ -1,5 +1,9 @@
 from collections import defaultdict
+import matplotlib.pyplot as plt
 import numpy as np
+from tqdm import tqdm
+from numpy.linalg import inv
+from scipy import linalg
 
 
 class MullerOperators:
@@ -23,6 +27,26 @@ class MullerOperators:
         linear_polarizer = 0.5 * np.array(self.muller_matrix(self.pl_type))
 
         return linear_polarizer
+
+    def general_wave_plate(self):
+
+        gwp11 = np.cos(2*self.teta)**2 + (np.sin(2*self.teta)**2)*np.cos(self.sigma)
+        gwp12 = np.cos(2*self.teta)*np.sin(2*self.teta)*(1-np.cos(self.sigma))
+        gwp13 = np.sin(2*self.teta)*np.sin(self.sigma)
+
+        gwp21 = np.cos(2*self.teta)*np.sin(2*self.teta)*(1-np.cos(self.sigma))
+        gwp22 = np.sin(2*self.teta)**2 + (np.cos(2*self.teta)**2)*np.cos(self.sigma)
+        gwp23 = -np.cos(2*self.teta)*np.sin(self.sigma)
+
+        gwp31 = -np.sin(2*self.teta)*np.sin(self.sigma)
+        gwp32 = np.cos(2*self.teta)*np.sin(self.sigma)
+        gwp33 = np.cos(self.sigma)
+
+        gwp = np.array([[1, 0, 0, 0],
+                        [0, gwp11, gwp12, gwp13],
+                        [0, gwp21, gwp22, gwp23],
+                        [0, gwp31, gwp32, gwp33]], np.float64)
+        return gwp*0.5
 
     def rotation_matrix(self, sign) -> np.ndarray:
 
@@ -51,12 +75,22 @@ class MullerOperators:
         muller['LP_0'] = np.array([[1, 1, 0, 0],
                                    [1, 1, 0, 0],
                                    [0, 0, 0, 0],
-                                   [0, 0, 0, 0]], np.float64)
+                                   [0, 0, 0, 0]], np.float64)                     # Horizontal Linear Polarizer
 
-        muller['LP_90'] = np.array([[1, -1, 0, 0],
+        muller['LP_90'] = np.array([[1, -1, 0, 0],                                # Vertical Linear Polarizer
                                     [-1, 1, 0, 0],
                                     [0, 0, 0, 0],
                                     [0, 0, 0, 0]], np.float64)
+
+        muller['LP_-45'] = np.array([[1, 0, -1, 0],                               # -45 transmission Linear Polarizer
+                                     [0, 0, 0, 0],
+                                     [-1, 0, 1, 0],
+                                     [0, 0, 0, 0]], np.float64)
+
+        muller['LP_+45'] = np.array([[1, 0, 1, 0],                                # +45 transmission Linear Polarizer
+                                     [0, 0, 0, 0],
+                                     [1, 0, 1, 0],
+                                     [0, 0, 0, 0]], np.float64)
 
         # Additional elements should be added here to be used in the simulation
         muller['M_x'] = np.array([[1, 0, 0, 0],
@@ -88,11 +122,11 @@ def transfer_matrix(theta1: any,
     transform: Intensity of the light at CCD
     """
 
-    t_1 = MullerOperators(theta1, retardance1, 'LP_0')
-    w_1 = t_1.wave_plate()                                      # Wave plate transfer matrix at specified angle
+    t_1 = MullerOperators(theta1, retardance1, 'LP_+45')
+    w_1 = t_1.general_wave_plate()                                      # Wave plate transfer matrix at specified angle
     p_1 = t_1.linear_polarizer()                                # Linear polarizer transfer matrix at specified angle
-    t_2 = MullerOperators(theta2, retardance2, 'LP_90')
-    w_2 = t_2.wave_plate()                                      # Wave plate transfer matrix at specified angle
+    t_2 = MullerOperators(theta2, retardance2, 'LP_-45')
+    w_2 = t_2.general_wave_plate()                                      # Wave plate transfer matrix at specified angle
     p_2 = t_2.linear_polarizer()                                # Linear polarizer transfer matrix at specified angle
 
     s_out = p_2 @ w_2 @ w_1 @ p_1 @ incident
@@ -150,14 +184,14 @@ def run_simulation(t_experiment: float,
     theta1 = generate_rotation(t_array, omega_1, inverse=False)
     theta2 = generate_rotation(t_array, omega_2, inverse=False)
 
-    noise = np.random.normal(0, 0.001, len(theta1))
+    noise = np.random.normal(0, 0.000, len(theta1))
     theta1_n = theta1 + noise
     theta2_n = theta2 + noise
 
     for i, j in enumerate(t_array):                                              # This needs to be VECTORIZED later on
 
-        retardance1 = 133 + np.random.normal(0, 0.01, 1)
-        retardance2 = 71 + np.random.normal(0, 0.01, 1)
+        retardance1 = 133 + np.random.normal(0, 0.00, 1)
+        retardance2 = 71 + np.random.normal(0, 0.00, 1)
 
         ccd_s.append(transfer_matrix(theta1_n[i],
                                      theta2_n[i],
@@ -166,3 +200,196 @@ def run_simulation(t_experiment: float,
                                      s_0))                                       # This needs to be VECTORIZED later on
 
     return ccd_s, t_array
+
+
+def modulation_matrix(theta1: any,
+                      theta2: any,
+                      retardance1: any,
+                      retardance2: any) -> np.ndarray:
+    """
+    This function uses muller operations from the
+    class Muller_operators and imitates behavior of
+    the experimental optical setup. Incident light
+    is transformed through series of linear operators.
+
+    Parameters:
+    __________
+    angle1: rotation of the wave pallet 1
+    angle2: rotation of the wave pallet 2
+    incident: stoke vector of light emitted by laser
+
+    Return:
+    ______
+    transform: Intensity of the light at CCD
+    """
+
+    t_1 = MullerOperators(theta1, retardance1, 'LP_0')
+    w_1 = t_1.general_wave_plate()                                      # Wave plate transfer matrix at specified angle
+    p_1 = t_1.linear_polarizer()                                # Linear polarizer transfer matrix at specified angle
+    t_2 = MullerOperators(theta2, retardance2, 'LP_90')
+    w_2 = t_2.general_wave_plate()                                      # Wave plate transfer matrix at specified angle
+    p_2 = t_2.linear_polarizer()                                # Linear polarizer transfer matrix at specified angle
+    c = np.zeros((4, 4))
+
+    for k in range(0, 4):
+        for l in range(0, 4):
+            for j in range(0, 4):
+                c[k][l] += p_1[0][j]*w_1[j][k]*w_2[l][j]*p_2[j][0]
+
+    d = c
+    try:
+        inverse = np.linalg.inv(d)
+    except np.linalg.LinAlgError:
+        # print("Not Invertible")
+        return -1000
+    else:
+        # print("Invertible")
+        return np.linalg.norm(d, np.inf) * np.linalg.norm(np.linalg.inv(d), np.inf)
+
+
+def modulation_matrix2(theta1: any,
+                       theta2: any,
+                       retardance1: any,
+                       retardance2: any) -> np.ndarray:
+    """
+    This function uses muller operations from the
+    class Muller_operators and imitates behavior of
+    the experimental optical setup. Incident light
+    is transformed through series of linear operators.
+
+    Parameters:
+    __________
+    angle1: rotation of the wave pallet 1
+    angle2: rotation of the wave pallet 2
+    incident: stoke vector of light emitted by laser
+
+    Return:
+    ______
+    transform: Intensity of the light at CCD
+    """
+
+    t_1 = MullerOperators(theta1, retardance1, 'LP_-45')
+    w_1 = t_1.general_wave_plate()  # Wave plate transfer matrix at specified angle
+    p_1 = t_1.linear_polarizer()  # Linear polarizer transfer matrix at specified angle
+    t_2 = MullerOperators(theta2, retardance2, 'LP_+45')
+    w_2 = t_2.general_wave_plate()  # Wave plate transfer matrix at specified angle
+    p_2 = t_2.linear_polarizer()  # Linear polarizer transfer matrix at specified angle
+
+    s_in = [1, 0, 0, 0]
+    g = w_1 @ p_1
+    a = p_2 @ w_1
+    g_t = np.transpose(g)
+    p = np.kron(g_t, a)
+    try:
+        inverse = np.linalg.inv(p)
+    except np.linalg.LinAlgError:
+        # print("Not Invertible")
+        return -100
+    else:
+        print("Invertible")
+        return np.linalg.norm(p, np.inf)*np.linalg.norm(np.linalg.inv(p), np.inf)
+
+
+def modulation_matrix3(theta1: any,
+                       theta2: any,
+                       retardance1: any,
+                       retardance2: any) -> np.ndarray:
+    """
+    This function uses muller operations from the
+    class Muller_operators and imitates behavior of
+    the experimental optical setup. Incident light
+    is transformed through series of linear operators.
+
+    Parameters:
+    __________
+    angle1: rotation of the wave pallet 1
+    angle2: rotation of the wave pallet 2
+    incident: stoke vector of light emitted by laser
+
+    Return:
+    ______
+    transform:
+    """
+
+    c = np.zeros((4, 4))
+# ______________________________________________________________________________________________________________________
+
+    c[0][0] = 1
+
+    c[0][1] = np.cos(2*theta1)**2 + np.cos(retardance1)*np.sin(2*theta1)**2
+
+    c[0][2] = np.cos(2*theta1)*np.sin(2*theta1) - np.cos(retardance1)*np.cos(2*theta1)*np.sin(2*retardance1)
+
+    c[0][3] = np.sin(retardance1)*np.sin(2*theta1)
+
+# ______________________________________________________________________________________________________________________
+
+    c[1][0] = -(np.cos(2*theta2)**2 - np.cos(retardance2)*np.sin(2*theta2)**2)
+
+    c[1][1] = -(np.cos(2*theta2)**2 - np.cos(retardance2)*np.sin(2*theta2)**2) * \
+               (np.cos(2*theta1)**2 + np.cos(retardance1)*np.sin(2*theta1)**2)
+
+    c[1][2] = -(np.cos(2*theta2)**2 - np.cos(retardance2)*np.sin(2*theta2)**2) * \
+               (np.cos(2*theta1)*np.sin(2*theta1) - np.cos(retardance1)*np.cos(2*theta1)*np.sin(2*retardance1))
+
+    c[1][3] = -(np.sin(retardance1)*np.sin(2*theta1)) * \
+               (np.cos(2*theta2)**2 - np.cos(retardance2)*np.sin(2*theta2)**2)
+
+# ______________________________________________________________________________________________________________________
+
+    c[2][0] = np.cos(retardance2)*np.cos(2*theta2)*np.sin(2*theta2) - np.cos(2*theta2)*np.sin(2*theta2)
+
+    c[2][1] = -(np.cos(2*theta1)**2 + np.cos(retardance1)*np.sin(2*theta1)**2) *\
+               (np.cos(2*theta2)*np.sin(2*theta2) - np.cos(retardance2)*np.cos(2*theta2)*np.sin(2*theta2))
+
+    c[2][2] = -(np.cos(2*theta2)*np.sin(2*theta2) - np.cos(retardance2)*np.cos(2*theta2)*np.sin(2*theta2)) * \
+               (np.cos(2*theta1)*np.sin(2*theta1) - np.cos(retardance2)*np.cos(2*theta1)*np.sin(2*theta1))
+
+    c[2][3] = -(np.sin(retardance1)*np.sin(2*theta1)) * \
+               (np.cos(2*theta2)*np.sin(2*theta2) - np.cos(retardance2)*np.cos(2*theta2)*np.sin(2*retardance2))
+
+# ______________________________________________________________________________________________________________________
+
+    c[3][0] = np.sin(retardance2)*np.sin(2*theta2)
+
+    c[3][1] = np.sin(retardance2)*np.sin(2*theta2)*(np.cos(2*theta1)**2 + np.cos(retardance1)*np.sin(2*theta1)**2)
+
+    c[3][2] = (np.sin(retardance2)*np.sin(2*theta2)) * \
+              (np.cos(2*theta1)*np.sin(2*theta1) - np.cos(retardance1)*np.cos(2*theta1)*np.sin(2*theta1))
+
+    c[3][3] = np.sin(retardance1)*np.sin(2*theta1)*np.sin(retardance2)*np.sin(2*theta2)
+
+# ______________________________________________________________________________________________________________________
+    c_t = np.transpose(c)
+    g = c @ c_t
+    # g_1 = inv(g)
+    # r = c_t @ g_1
+    # np.linalg.det(c_t @ c)
+    # sum(np.square(np.diagonal(c_t @ c)))
+    d = c
+    try:
+        inverse = np.linalg.inv(d)
+    except np.linalg.LinAlgError:
+        # print("Not Invertible")
+        return -100
+    else:
+        # print("Invertible")
+        return np.linalg.norm(d, np.inf) * np.linalg.norm(np.linalg.inv(d), np.inf)
+
+
+theta_1 = np.linspace(0, 180, 200)
+theta_2 = np.linspace(0, 180, 200)
+X, Y = np.meshgrid(theta_1, theta_2)
+z = np.zeros((len(theta_1), len(theta_2)))
+
+for i, x in (enumerate(theta_1)):
+    for j, y in enumerate(theta_2):
+        # print(np.square(modulation_matrix(x, y, 171, 73)))
+        # z[i][j] = np.sqrt(sum(sum(np.square(modulation_matrix2(x, y, 171, 73)))))
+        z[i][j] = (modulation_matrix2(x, y, 126, 126))
+
+
+# contours = plt.contour(X, Y, z, 3, colors='black')
+# plt.clabel(contours, inline=True, fontsize=8)
+plt.contourf(z)
+plt.show()
