@@ -198,6 +198,4 @@ def run_simulation(t_experiment: float,
                                      retardance1,
                                      retardance2,
                                      s_0))                                       # This needs to be VECTORIZED later on
-
     return ccd_s, t_array
-
