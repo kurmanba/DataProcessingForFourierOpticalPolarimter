@@ -237,8 +237,8 @@ def modulation_matrix4(theta1: any,                             # From the book 
     return np.array(w)
 
 
-theta_1 = np.linspace(0, 40, 40)
-theta_2 = np.linspace(0, 40, 40)
+theta_1 = np.linspace(0, 60, 40)
+theta_2 = np.linspace(0, 60, 40)
 X, Y = np.meshgrid(theta_1, theta_2)
 z = np.zeros((len(theta_1), len(theta_2)))
 
