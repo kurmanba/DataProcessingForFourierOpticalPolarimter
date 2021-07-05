@@ -201,7 +201,7 @@ def generate_rotation(t: np.ndarray,
     if not inverse:
         return w*t
     else:
-        return 360 - w*t % 360
+        return -w*t  # 360 - w*t % 360
 
 
 def run_simulation(t_experiment: float,
@@ -228,7 +228,7 @@ def run_simulation(t_experiment: float,
     ccd_s = []                                                                  # Signal sampled by camera
     ccd_sn = []                                                                 # Signal sampled by camera
     theta1 = generate_rotation(t_array, omega_1, inverse=False)
-    theta2 = generate_rotation(t_array, omega_2, inverse=False)
+    theta2 = generate_rotation(t_array, omega_2, inverse=True)
 
     noise = np.random.normal(0, 0.000, len(theta1))
     theta1_n = theta1 + noise
@@ -271,7 +271,7 @@ def run_simulation2(t_experiment: float,
     ccd_s = []                                                                  # Signal sampled by camera
     ccd_sn = []                                                                 # Signal sampled by camera
     theta1 = generate_rotation(t_array, omega_1, inverse=False)
-    theta2 = generate_rotation(t_array, omega_2, inverse=False)
+    theta2 = generate_rotation(t_array, omega_2, inverse=True)
 
     noise = np.random.normal(0, 0.000, len(theta1))
     theta1_n = theta1 + noise
