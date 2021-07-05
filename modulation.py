@@ -76,7 +76,7 @@ def modulation_matrix2(theta1: any,                                     # From p
     t_1 = MullerOperators(theta1, retardance1, 'LP_90')
     w_1 = t_1.general_wave_plate()  # Wave plate transfer matrix at specified angle
     p_1 = t_1.linear_polarizer()  # Linear polarizer transfer matrix at specified angle
-    t_2 = MullerOperators(theta2, retardance2, 'LP_0')
+    t_2 = MullerOperators(theta2, retardance2, 'LP_90')
     w_2 = t_2.general_wave_plate()  # Wave plate transfer matrix at specified angle
     p_2 = t_2.linear_polarizer()  # Linear polarizer transfer matrix at specified angle
 
@@ -84,10 +84,15 @@ def modulation_matrix2(theta1: any,                                     # From p
     s_in = np.array([1, 0, 0, 0])
 
     g = w_1 @ p_1 @ s_in
-    a = p_2 @ w_2 @ g
+    a = s_in @ p_2 @ w_2
 
     g_t = np.transpose(g)
     p = np.kron(g_t, a)
+
+    _, g2 = np.linalg.eigh(w_1 @ p_1)
+    _, a2 = np.linalg.eigh(p_2 @ w_2)
+    p2 = np.kron(g2[0], a2[0])
+
     return p
     # try:
     #     inverse = np.linalg.inv(p)
@@ -237,23 +242,22 @@ def modulation_matrix4(theta1: any,                             # From the book 
     return np.array(w)
 
 
-theta_1 = np.linspace(0, 60, 40)
-theta_2 = np.linspace(0, 60, 40)
+theta_1 = np.linspace(0, 40, 40)
+theta_2 = np.linspace(0, 40, 40)
 X, Y = np.meshgrid(theta_1, theta_2)
 z = np.zeros((len(theta_1), len(theta_2)))
 
-t_array = np.arange(0, 1, 1 / (100 * 1))
-t1 = generate_rotation(t_array, 1000, inverse=False)
-t2 = generate_rotation(t_array, 3000, inverse=True)
+t_array = np.arange(0, 1, 1 / (30 * 1))
+t1 = generate_rotation(t_array, 100, inverse=False)
+t2 = generate_rotation(t_array, 500, inverse=True)
 
 for i, x in (enumerate(theta_1)):
     for j, y in enumerate(theta_2):
         h = modulation_matrix2(t1[0], t2[0], x, y)
-        for q in range(1, len(t1)):
+        for q in range(1, 16):
             h2 = modulation_matrix2(t1[q], t2[q], x, y)
             h = np.vstack((h, h2))
-
-        z[i][j] = np.linalg.norm(h, 'fro') * np.linalg.norm(np.linalg.pinv(h), 'fro')
+        z[i][j] = (np.linalg.norm(h, np.inf) * np.linalg.norm(np.linalg.pinv(h), np.inf))
         # try:
         #     inverse = np.linalg.inv(h)
         # except np.linalg.LinAlgError:

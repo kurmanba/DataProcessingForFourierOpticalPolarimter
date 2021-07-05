@@ -14,7 +14,7 @@ store_results = defaultdict()
 store_results_noise = defaultdict()
 
 for i in tqdm(ratios):
-    store_results[i], t = run_simulation(t_experiment, sampling_rate, s_0, omega_1, omega_1*i)
+    store_results[i], t = run_simulation2(t_experiment, sampling_rate, s_0, omega_1, omega_1*i)
 
 
 for i in ratios:

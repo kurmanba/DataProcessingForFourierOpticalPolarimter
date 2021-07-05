@@ -137,6 +137,52 @@ def transfer_matrix(theta1: any,
     return s_out[0]
 
 
+def transfer_matrix2(theta1: any,
+                     theta2: any,
+                     retardance1: any,
+                     retardance2: any,
+                     incident: np.ndarray) -> np.ndarray:    # Muller matrix of the sample must be added
+    """
+    This function uses muller operations from the
+    class Muller_operators and imitates behavior of
+    the experimental optical setup. Incident light
+    is transformed through series of linear operators.
+
+    Parameters:
+    __________
+    angle1: rotation of the wave pallet 1
+    angle2: rotation of the wave pallet 2
+    incident: stoke vector of light emitted by laser
+
+    Return:
+    ______
+    transform: Intensity of the light at CCD
+    """
+
+    t_1 = MullerOperators(theta1, retardance1, 'LP_+45')
+    w_1 = t_1.general_wave_plate()                                      # Wave plate transfer matrix at specified angle
+    p_1 = t_1.linear_polarizer()                                # Linear polarizer transfer matrix at specified angle
+    t_2 = MullerOperators(theta2, retardance2, 'LP_-45')
+    w_2 = t_2.general_wave_plate()                                      # Wave plate transfer matrix at specified angle
+    p_2 = t_2.linear_polarizer()                                # Linear polarizer transfer matrix at specified angle
+
+    s_in = np.array([1, 0, 0, 0])
+    s_out = p_2 @ w_2 @ w_1 @ p_1 @ incident
+
+    g = w_1 @ p_1 @ s_in
+    a = s_in @ p_2 @ w_2
+
+    mueller_sample = np.array([[1, 0, 0, 0],
+                              [0, 1, 0, 0],
+                              [0, 0, 1, 0],
+                              [0, 0, 0, 1]], np.float64)
+    p = np.kron(g, a)
+    b = (np.reshape(mueller_sample, 16))
+    s_out = np.dot(p, b)
+
+    return s_out
+
+
 def generate_rotation(t: np.ndarray,
                       w: float,
                       inverse: bool):
@@ -198,4 +244,47 @@ def run_simulation(t_experiment: float,
                                      retardance1,
                                      retardance2,
                                      s_0))                                       # This needs to be VECTORIZED later on
+    return ccd_s, t_array
+
+
+def run_simulation2(t_experiment: float,
+                    sampling_rate: float,
+                    s_0: np.ndarray,
+                    omega_1: float,
+                    omega_2: float) -> tuple:                                    # Inputs are fixed for now
+    """
+    Function calculates angle of incidence based on angular rotation
+    Parameters:
+    __________
+    t_experiment: Duration of the experiment.
+    sampling_rate: Sampling frequency of the camera.
+    s_0: Incident light stoke vector.
+    omega_1: Angular speed of PSG.
+    omega_2: Angular speed of PSA.
+
+    Return:
+    ______
+    ccd: Detected intensity.
+    """
+
+    t_array = np.arange(0, t_experiment, 1/(sampling_rate * t_experiment))
+    ccd_s = []                                                                  # Signal sampled by camera
+    ccd_sn = []                                                                 # Signal sampled by camera
+    theta1 = generate_rotation(t_array, omega_1, inverse=False)
+    theta2 = generate_rotation(t_array, omega_2, inverse=False)
+
+    noise = np.random.normal(0, 0.000, len(theta1))
+    theta1_n = theta1 + noise
+    theta2_n = theta2 + noise
+
+    for i, j in enumerate(t_array):                                              # This needs to be VECTORIZED later on
+
+        retardance1 = 133 + np.random.normal(0, 0.00, 1)
+        retardance2 = 71 + np.random.normal(0, 0.00, 1)
+
+        ccd_s.append(transfer_matrix2(theta1_n[i],
+                                      theta2_n[i],
+                                      retardance1,
+                                      retardance2,
+                                      s_0))                                       # This needs to be VECTORIZED later on
     return ccd_s, t_array
