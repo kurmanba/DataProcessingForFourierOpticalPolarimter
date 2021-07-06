@@ -65,17 +65,18 @@ def modulation_matrix2(theta1: any,                                     # From p
     return p
 
 
-def map_performance(ratio: int,
+def map_performance(ratio: float,
                     angular_increments: int):
 
-    theta_1 = np.linspace(0, 90, angular_increments)
-    theta_2 = np.linspace(0, 90, angular_increments)
+    theta_1 = np.linspace(0, 180, angular_increments)
+    theta_2 = np.linspace(0, 180, angular_increments)
+
     X, Y = np.meshgrid(theta_1, theta_2)
     z = np.zeros((len(theta_1), len(theta_2)))
 
-    determination = 100
-    t1 = np.linspace(90, 300, determination)
-    t2 = np.linspace(90, ratio*300, determination)
+    determination = 120
+    t1 = np.linspace(0, 300, determination)
+    t2 = np.linspace(0, ratio*300, determination)
 
     for i, x in enumerate(tqdm(theta_1)):
         for j, y in enumerate(theta_2):
@@ -84,7 +85,7 @@ def map_performance(ratio: int,
                 h2 = modulation_matrix2(t1[q], t2[q], x, y)
                 h = np.vstack((h, h2))
 
-            norm_upperbound = 50
+            norm_upperbound = 200
             try:
                 inverse = np.linalg.inv(h)
             except np.linalg.LinAlgError:
@@ -120,13 +121,15 @@ def map_performance(ratio: int,
     plt.plot(theta_1i, condition)
     # plt.savefig("condsss_vs_retardance_symmetric{}_{}.jpeg".format(ratio, determination))
     fig, ax = plt.subplots(1, 1)
-    cp = ax.contourf(X, Y, z)
-    fig.colorbar(cp)
-    ax.set_title('PSA vs PSG (retardance)')
-    ax.set_xlabel('PSG')
-    ax.set_ylabel('PSA')
+    cp = ax.contourf(X, Y, z, cmap='jet')
+    c = fig.colorbar(cp)
+    c.set_ticks([])
+    # plt.contourf(X, Y, z, 5, alpha=0.75, cmap='jet')
+    # plt.contour(X, Y, z, 3, colors='black', linewidth=0.5)
+    ax.set_title('PSA vs PSG at modulation ratio = {}'.format(ratio))
+    ax.set_xlabel('retardance of PSG [deg]')
+    ax.set_ylabel('retardance of PSA [deg]')
+    plt.savefig("ratiosss{}_{}.jpeg".format(ratio, determination), dpi=1000)
     plt.show()
-    # plt.savefig("ratiosss{}_{}.jpeg".format(ratio, determination))
 
-
-map_performance(10, 90)
+map_performance(3.68, 180)
