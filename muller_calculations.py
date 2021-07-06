@@ -72,6 +72,7 @@ class MullerOperators:
     def muller_matrix(operator: str) -> defaultdict:                              # Dictionary of passive elements
 
         muller = defaultdict()
+
         muller['LP_0'] = np.array([[1, 1, 0, 0],                                  # Horizontal Linear Polarizer
                                    [1, 1, 0, 0],
                                    [0, 0, 0, 0],
@@ -92,7 +93,7 @@ class MullerOperators:
                                      [1, 0, 1, 0],
                                      [0, 0, 0, 0]], np.float64)
 
-        # Additional elements should be added here to be used in the simulation
+        # Additional elements should be added here to be used in the simulation (air m example)
         muller['M_x'] = np.array([[1, 0, 0, 0],
                                   [0, 1, 0, 0],
                                   [0, 0, 1, 0],

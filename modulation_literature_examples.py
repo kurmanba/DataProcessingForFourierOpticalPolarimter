@@ -13,7 +13,7 @@ from random import sample
 def modulation_matrix(theta1: any,
                       theta2: any,
                       retardance1: any,
-                      retardance2: any) -> np.ndarray:
+                      retardance2: any) -> float:
     """
     This function uses muller operations from the
     class Muller_operators and imitates behavior of
@@ -22,13 +22,14 @@ def modulation_matrix(theta1: any,
 
     Parameters:
     __________
-    angle1: rotation of the wave pallet 1
-    angle2: rotation of the wave pallet 2
-    incident: stoke vector of light emitted by laser
+    angle1: rotation of the wave plate 1
+    angle2: rotation of the wave plate 2
+    retardance1:
+    retardance2:
 
     Return:
     ______
-    transform: Intensity of the light at CCD
+    p: Polarization parameter matrix
     """
 
     t_1 = MullerOperators(theta1, retardance1, 'LP_0')
@@ -45,6 +46,7 @@ def modulation_matrix(theta1: any,
                 c[k][l] += p_1[0][j]*w_1[j][k]*w_2[l][j]*p_2[j][0]
 
     d = c
+
     try:
         inverse = np.linalg.inv(d)
     except np.linalg.LinAlgError:
@@ -67,13 +69,14 @@ def modulation_matrix2(theta1: any,                                     # From p
 
     Parameters:
     __________
-    angle1: rotation of the wave pallet 1
-    angle2: rotation of the wave pallet 2
-    incident: stoke vector of light emitted by laser
+    angle1: rotation of the wave plate 1
+    angle2: rotation of the wave plate 2
+    retardance1:
+    retardance2:
 
     Return:
     ______
-    transform: Intensity of the light at CCD
+    p: Polarization parameter matrix
     """
 
     t_1 = MullerOperators(theta1, retardance1, 'LP_+45')
@@ -105,7 +108,7 @@ def modulation_matrix2(theta1: any,                                     # From p
 def modulation_matrix3(theta1: any,                                 # From publication
                        theta2: any,
                        retardance1: any,
-                       retardance2: any) -> np.ndarray:
+                       retardance2: any) -> float:
     """
     This function uses muller operations from the
     class Muller_operators and imitates behavior of
@@ -114,13 +117,14 @@ def modulation_matrix3(theta1: any,                                 # From publi
 
     Parameters:
     __________
-    angle1: rotation of the wave pallet 1
-    angle2: rotation of the wave pallet 2
-    incident: stoke vector of light emitted by laser
+    angle1: rotation of the wave plate 1
+    angle2: rotation of the wave plate 2
+    retardance1:
+    retardance2:
 
     Return:
     ______
-    transform:
+    p: Polarization parameter matrix
     """
 
     c = np.zeros((4, 4))
@@ -190,13 +194,14 @@ def modulation_matrix4(theta1: any,                             # From the book 
 
     Parameters:
     __________
-    angle1: rotation of the wave pallet 1
-    angle2: rotation of the wave pallet 2
-    incident: stoke vector of light emitted by laser
+    angle1: rotation of the wave plate 1
+    angle2: rotation of the wave plate 2
+    retardance1:
+    retardance2:
 
     Return:
     ______
-    transform:
+    w: Polarization parameter matrix
     """
 
     w = np.zeros(16)
