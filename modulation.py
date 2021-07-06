@@ -10,6 +10,16 @@ from random import choice
 from random import sample
 
 
+def rotation_matrix2(teta, sign) -> np.ndarray:
+    a, b = np.cos(2 * teta * sign), np.sin(2 * teta * sign)
+
+    rotate = np.array([[1, 0, 0, 0],
+                       [0, a, b, 0],
+                       [0, -b, a, 0],
+                       [0, 0, 0, 1]], np.float64)
+    return rotate
+
+
 def modulation_matrix2(theta1: any,                                     # From publication J. Zallat et. all 2006
                        theta2: any,
                        retardance1: any,
@@ -33,11 +43,16 @@ def modulation_matrix2(theta1: any,                                     # From p
     """
 
     t_1 = MullerOperators(theta1, retardance1, 'LP_90')
+    r_0, r_1 = rotation_matrix2(90, -1), rotation_matrix2(90, 1)
+    r_2, r_3 = rotation_matrix2(90, -1), rotation_matrix2(90, 1)
+
     w_1 = t_1.general_wave_plate()                               # Wave plate transfer matrix at specified angle
     p_1 = t_1.linear_polarizer()                                 # Linear polarizer transfer matrix at specified angle
+    # p_1 = r_0 @ p_1 @ r_1
     t_2 = MullerOperators(theta2, retardance2, 'LP_90')
     w_2 = t_2.general_wave_plate()                               # Wave plate transfer matrix at specified angle
     p_2 = t_2.linear_polarizer()                                 # Linear polarizer transfer matrix at specified angle
+    # p_2 = r_2 @ p_2 @ r_3
 
     s_center = np.array([1, np.sqrt(1/3), np.sqrt(1/3), np.sqrt(1/3)])
     s_in = np.array([1, 0, 0, 0])
@@ -50,27 +65,26 @@ def modulation_matrix2(theta1: any,                                     # From p
     return p
 
 
-ratios = np.linspace(0, 10, 20)
+def map_performance(ratio: int,
+                    angular_increments: int):
 
-for x, ratio in enumerate(tqdm(ratios)):
-
-    theta_1 = np.linspace(0, 90, 180)
-    theta_2 = np.linspace(0, 90, 180)
+    theta_1 = np.linspace(0, 90, angular_increments)
+    theta_2 = np.linspace(0, 90, angular_increments)
     X, Y = np.meshgrid(theta_1, theta_2)
     z = np.zeros((len(theta_1), len(theta_2)))
 
-    determination = 120
-    t1 = np.linspace(0.1, 300, determination)
-    t2 = np.linspace(0.1, ratio*300, determination)
+    determination = 100
+    t1 = np.linspace(90, 300, determination)
+    t2 = np.linspace(90, ratio*300, determination)
 
-    for i, x in enumerate(theta_1):
+    for i, x in enumerate(tqdm(theta_1)):
         for j, y in enumerate(theta_2):
             h = modulation_matrix2(t1[0], t2[0], x, y)
             for q in range(1, determination):
                 h2 = modulation_matrix2(t1[q], t2[q], x, y)
                 h = np.vstack((h, h2))
 
-            norm_upperbound = 100
+            norm_upperbound = 50
             try:
                 inverse = np.linalg.inv(h)
             except np.linalg.LinAlgError:
@@ -101,15 +115,18 @@ for x, ratio in enumerate(tqdm(ratios)):
         if cond < 50:
             condition.append(cond)
         else:
-            condition.append(100)
+            condition.append(200)
 
     plt.plot(theta_1i, condition)
-    plt.savefig("cond_vs_retardance_symmetric{}_{}.jpeg".format(ratio, determination))
+    # plt.savefig("condsss_vs_retardance_symmetric{}_{}.jpeg".format(ratio, determination))
     fig, ax = plt.subplots(1, 1)
     cp = ax.contourf(X, Y, z)
     fig.colorbar(cp)
     ax.set_title('PSA vs PSG (retardance)')
     ax.set_xlabel('PSG')
     ax.set_ylabel('PSA')
-    plt.savefig("ratio{}_{}.jpeg".format(ratio, determination))
+    plt.show()
+    # plt.savefig("ratiosss{}_{}.jpeg".format(ratio, determination))
 
+
+map_performance(10, 90)
