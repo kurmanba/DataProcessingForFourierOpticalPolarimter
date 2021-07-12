@@ -1,16 +1,9 @@
-from collections import defaultdict
-import matplotlib.pyplot as plt
-import numpy as np
-from tqdm import tqdm
 from numpy.linalg import inv
-from scipy import linalg
 from muller_calculations import *
-from random import seed
-from random import choice
-from random import sample
 
 
 def rotation_matrix2(teta, sign) -> np.ndarray:
+
     a, b = np.cos(2 * teta * sign), np.sin(2 * teta * sign)
 
     rotate = np.array([[1, 0, 0, 0],
@@ -131,5 +124,6 @@ def map_performance(ratio: float,
     ax.set_ylabel('retardance of PSA [deg]')
     plt.savefig("ratiosss{}_{}.jpeg".format(ratio, determination), dpi=1000)
     plt.show()
+
 
 map_performance(3.68, 180)
