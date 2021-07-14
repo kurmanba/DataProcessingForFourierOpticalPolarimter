@@ -1,12 +1,8 @@
-import matplotlib.pyplot as plt
 from plot_helper import *
 from simulation_parameters import *
-from collections import defaultdict
 from fourier_transforms import *
 from scipy.optimize import leastsq, basinhopping  # , differential_evolution
-from tqdm import tqdm
-import numpy as np
-
+from muller_calculations import *
 
 t_experiment, sampling_rate, s_0, omega_1, omega_2 = extract_parameters()                       # Extract parameters
 ratios = np.arange(1, 40, 1)
@@ -43,3 +39,20 @@ print(optimized.x[9])
 plot_mc_fits(optimized.x, leastsq_x[0], t, store_results, harmonics)
 
 
+z = []
+z1 = []
+z2 = []
+
+for i in tqdm(range(0, 30000)):
+
+    z.append(drr_norm_measure_padua(np.array([90, 90])))
+    z2.append(drr_norm_measure(np.array([3, 10, 90, 90, 21])))
+
+fontsize = 10
+plt.hist(z2, bins=300, label="Linear Increments with ratio")
+plt.hist(z, bins=300, label="Padua Interpolation Points")
+plt.xlim(0, 400)
+plt.legend(loc='upper right')
+plt.xlabel("Data", fontsize=fontsize)
+plt.ylabel("Occurrence", fontsize=fontsize)
+plt.show()

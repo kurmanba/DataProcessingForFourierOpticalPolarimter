@@ -1,9 +1,5 @@
 from collections import defaultdict
-import matplotlib.pyplot as plt
 import numpy as np
-from tqdm import tqdm
-from numpy.linalg import inv
-from scipy import linalg
 
 
 class MullerOperators:
@@ -248,7 +244,7 @@ def run_simulation(t_experiment: float,
     return ccd_s, t_array
 
 
-def run_simulation2(t_experiment: float,
+def run_simulation2(t_experiment: float,                       # This simulation is run on orthogonality transfer matrix
                     sampling_rate: float,
                     s_0: np.ndarray,
                     omega_1: float,

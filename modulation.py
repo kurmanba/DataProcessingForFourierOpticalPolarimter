@@ -1,5 +1,8 @@
 from numpy.linalg import inv
+from matplotlib import pyplot as plt
 from muller_calculations import *
+from inerpolation_methods import *
+from tqdm import tqdm
 
 
 def rotation_matrix2(teta, sign) -> np.ndarray:
@@ -13,7 +16,7 @@ def rotation_matrix2(teta, sign) -> np.ndarray:
     return rotate
 
 
-def modulation_matrix2(theta1: any,                                     # From publication J. Zallat et. all 2006
+def modulation_matrix2(theta1: any,                                            # From publication J. Zallat et. all 2006
                        theta2: any,
                        retardance1: any,
                        retardance2: any) -> np.ndarray:
@@ -35,7 +38,7 @@ def modulation_matrix2(theta1: any,                                     # From p
     p: Polarization parameter matrix
     """
 
-    t_1 = MullerOperators(theta1, retardance1, 'LP_90')
+    t_1 = MullerOperators(theta1, retardance1, 'LP_0')
     r_0, r_1 = rotation_matrix2(90, -1), rotation_matrix2(90, 1)
     r_2, r_3 = rotation_matrix2(90, -1), rotation_matrix2(90, 1)
 
@@ -53,9 +56,8 @@ def modulation_matrix2(theta1: any,                                     # From p
 
     g = w_1 @ p_1 @ s_in
     a = p_2 @ w_2
-    p = np.kron(g, a[0][:])
 
-    return p
+    return np.kron(g, a[0][:])
 
 
 def map_performance(ratio: float,
@@ -126,4 +128,98 @@ def map_performance(ratio: float,
     plt.show()
 
 
-map_performance(3.68, 180)
+def drr_norm_measure(v: np.ndarray) -> float:                                  # optimization of performance parameters
+
+    ratio = v[0]
+    omega1 = v[1]
+    retardance1 = v[2]
+    retardance2 = v[3]
+    determination = int(v[4])
+
+    t1 = np.linspace(0, determination*omega1, determination)
+    t2 = np.linspace(0, ratio*determination*omega1, determination)
+
+    noise1 = np.random.normal(0, 1, len(t1))
+    noise2 = np.random.normal(0, 1, len(t1))
+
+    t1 = t1 + noise1
+    t2 = t2 + noise2
+
+    h = modulation_matrix2(t1[0], t2[0], retardance1, retardance2)
+    for q in range(1, determination):
+        h = np.vstack((h, modulation_matrix2(t1[q], t2[q], retardance1, retardance2)))
+
+    norm_upperbound = 50000000
+    z = 0
+    try:
+        inverse = np.linalg.inv(h)
+    except np.linalg.LinAlgError:
+        d = (np.linalg.norm(h, np.inf) * np.linalg.norm(np.linalg.pinv(h), np.inf))
+        if d < norm_upperbound:
+            z = d
+        else:
+            z = norm_upperbound
+    else:
+        d = (np.linalg.norm(h, np.inf) * np.linalg.norm(np.linalg.inv(h), np.inf))
+        if d < norm_upperbound:
+            z = d
+        else:
+            z = norm_upperbound
+    return z
+
+
+def drr_norm_measure2(v: np.ndarray) -> float:                                    # optimization of interpolation points
+
+    retardance1 = v[0]
+    retardance2 = v[1]
+    t1 = v[2:18]
+    t2 = v[18:34]
+
+    noise1 = np.random.normal(0, 1, len(t1))
+    noise2 = np.random.normal(0, 1, len(t1))
+
+    # t1 = t1 + noise1
+    # t2 = t2 + noise2
+
+    h = modulation_matrix2(t1[0], t2[0], retardance1, retardance2)
+    for q in range(1, len(t1)):
+        h = np.vstack((h, modulation_matrix2(t1[q], t2[q], retardance1, retardance2)))
+
+    return np.linalg.norm(h, np.inf) * np.linalg.norm(np.linalg.pinv(h), np.inf)
+
+
+def drr_norm_measure_padua(v: np.ndarray) -> float:                    # optimization of interpolation points with padua
+
+    retardance1 = v[0]
+    retardance2 = v[1]
+    t1, t2 = padua_points_2(5)
+
+    noise1 = np.random.normal(0, 1, len(t1))
+    noise2 = np.random.normal(0, 1, len(t1))
+
+    t1 = t1 + noise1
+    t2 = t2 + noise2
+
+    h = modulation_matrix2(t1[0], t2[0], retardance1, retardance2)
+    for q in range(1, len(t1)):
+        h = np.vstack((h, modulation_matrix2(t1[q], t2[q], retardance1, retardance2)))
+
+    norm_upperbound = 50000000
+    z = 0
+    try:
+        inverse = np.linalg.inv(h)
+    except np.linalg.LinAlgError:
+        d = (np.linalg.norm(h, np.inf) * np.linalg.norm(np.linalg.pinv(h), np.inf))
+        if d < norm_upperbound:
+            z = d
+        else:
+            z = norm_upperbound
+    else:
+        d = (np.linalg.norm(h, np.inf) * np.linalg.norm(np.linalg.inv(h), np.inf))
+        if d < norm_upperbound:
+            z = d
+        else:
+            z = norm_upperbound
+    return z
+
+

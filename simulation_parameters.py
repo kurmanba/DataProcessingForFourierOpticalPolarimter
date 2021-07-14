@@ -1,7 +1,3 @@
-import numpy as np
-from muller_calculations import *
-
-
 def extract_parameters():
 
     # Initialization Simulation Parameters (All the parameters for the optical setup must be entered here)
