@@ -6,6 +6,8 @@ from collections import defaultdict
 from scipy.signal import find_peaks
 from matplotlib.ticker import (MultipleLocator, AutoMinorLocator)
 
+# This is utility file! Wrapper containing the style and characteristics of a plots are written.
+# No description or comments as this is just a supplementary part of the code.
 
 grey, gold, lightblue, green = '#808080', '#cab18c', '#0096d6', '#008367'
 pink, yellow, orange, purple = '#ef7b9d', '#fbd349', '#ffa500', '#a35cff'
@@ -133,7 +135,7 @@ def plot_shannon_single(x: np.ndarray,
     plt.setp(stemline, linewidth=.5)
     plt.setp(markerline, markersize=.5)
     # plt.plot(x, y, color='#CD2305', linewidth=0.9)
-    #plt.scatter(x_0, y_0, s=3, marker='o')
+    # plt.scatter(x_0, y_0, s=3, marker='o')
     # arrow for periods
     arrowx = np.linspace(x[peaks[0]], x[peaks[1]], 100)
     arrowy = np.ones(len(arrowx))*49

@@ -3,6 +3,8 @@ from simulation_parameters import *
 from fourier_transforms import *
 from scipy.optimize import leastsq, basinhopping  # , differential_evolution
 from muller_calculations import *
+from tqdm import tqdm
+
 
 t_experiment, sampling_rate, s_0, omega_1, omega_2 = extract_parameters()                       # Extract parameters
 ratios = np.arange(1, 40, 1)

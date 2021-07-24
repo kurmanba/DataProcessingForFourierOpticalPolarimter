@@ -39,8 +39,8 @@ def modulation_matrix2(theta1: any,                                            #
     """
 
     t_1 = MullerOperators(theta1, retardance1, 'LP_0')
-    r_0, r_1 = rotation_matrix2(90, -1), rotation_matrix2(90, 1)
-    r_2, r_3 = rotation_matrix2(90, -1), rotation_matrix2(90, 1)
+    # r_0, r_1 = rotation_matrix2(90, -1), rotation_matrix2(90, 1)
+    # r_2, r_3 = rotation_matrix2(90, -1), rotation_matrix2(90, 1)
 
     w_1 = t_1.general_wave_plate()                               # Wave plate transfer matrix at specified angle
     p_1 = t_1.linear_polarizer()                                 # Linear polarizer transfer matrix at specified angle
@@ -50,14 +50,16 @@ def modulation_matrix2(theta1: any,                                            #
     p_2 = t_2.linear_polarizer()                                 # Linear polarizer transfer matrix at specified angle
     # p_2 = r_2 @ p_2 @ r_3
 
-    s_center = np.array([1, np.sqrt(1/3), np.sqrt(1/3), np.sqrt(1/3)])
+    # Stoke Vectors
+    # s_center = np.array([1, np.sqrt(1/3), np.sqrt(1/3), np.sqrt(1/3)])
+    # s_test = np.array([1, 1, 1, 1])
     s_in = np.array([1, 0, 0, 0])
-    s_test = np.array([1, 1, 1, 1])
 
     g = w_1 @ p_1 @ s_in
     a = p_2 @ w_2
+    p = np.kron(g, a[0][:])
 
-    return np.kron(g, a[0][:])
+    return p
 
 
 def map_performance(ratio: float,

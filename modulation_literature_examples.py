@@ -1,13 +1,6 @@
-from collections import defaultdict
-import matplotlib.pyplot as plt
 import numpy as np
-from tqdm import tqdm
 from numpy.linalg import inv
-from scipy import linalg
 from muller_calculations import MullerOperators
-from random import seed
-from random import choice
-from random import sample
 
 
 def modulation_matrix(theta1: any,
