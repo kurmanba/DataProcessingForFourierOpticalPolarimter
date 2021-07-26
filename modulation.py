@@ -151,23 +151,7 @@ def drr_norm_measure(v: np.ndarray) -> float:                                  #
     for q in range(1, determination):
         h = np.vstack((h, modulation_matrix2(t1[q], t2[q], retardance1, retardance2)))
 
-    norm_upperbound = 50000000
-    z = 0
-    try:
-        inverse = np.linalg.inv(h)
-    except np.linalg.LinAlgError:
-        d = (np.linalg.norm(h, np.inf) * np.linalg.norm(np.linalg.pinv(h), np.inf))
-        if d < norm_upperbound:
-            z = d
-        else:
-            z = norm_upperbound
-    else:
-        d = (np.linalg.norm(h, np.inf) * np.linalg.norm(np.linalg.inv(h), np.inf))
-        if d < norm_upperbound:
-            z = d
-        else:
-            z = norm_upperbound
-    return z
+    return np.linalg.norm(h, np.inf) * np.linalg.norm(np.linalg.pinv(h), np.inf)
 
 
 def drr_norm_measure2(v: np.ndarray) -> float:                                    # optimization of interpolation points
@@ -206,22 +190,7 @@ def drr_norm_measure_padua(v: np.ndarray) -> float:                    # optimiz
     for q in range(1, len(t1)):
         h = np.vstack((h, modulation_matrix2(t1[q], t2[q], retardance1, retardance2)))
 
-    norm_upperbound = 50000000
-    z = 0
-    try:
-        inverse = np.linalg.inv(h)
-    except np.linalg.LinAlgError:
-        d = (np.linalg.norm(h, np.inf) * np.linalg.norm(np.linalg.pinv(h), np.inf))
-        if d < norm_upperbound:
-            z = d
-        else:
-            z = norm_upperbound
-    else:
-        d = (np.linalg.norm(h, np.inf) * np.linalg.norm(np.linalg.inv(h), np.inf))
-        if d < norm_upperbound:
-            z = d
-        else:
-            z = norm_upperbound
-    return z
+    return np.linalg.norm(h, np.inf) * np.linalg.norm(np.linalg.pinv(h), np.inf)
+
 
 

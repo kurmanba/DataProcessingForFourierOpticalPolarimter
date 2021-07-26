@@ -119,10 +119,10 @@ def transfer_matrix(theta1: any,
     transform: Intensity of the light at CCD
     """
 
-    t_1 = MullerOperators(theta1, retardance1, 'LP_+45')
+    t_1 = MullerOperators(theta1, retardance1, 'LP_0')
     w_1 = t_1.general_wave_plate()                                      # Wave plate transfer matrix at specified angle
     p_1 = t_1.linear_polarizer()                                # Linear polarizer transfer matrix at specified angle
-    t_2 = MullerOperators(theta2, retardance2, 'LP_-45')
+    t_2 = MullerOperators(theta2, retardance2, 'LP_90')
     w_2 = t_2.general_wave_plate()                                      # Wave plate transfer matrix at specified angle
     p_2 = t_2.linear_polarizer()                                # Linear polarizer transfer matrix at specified angle
 
@@ -156,28 +156,27 @@ def transfer_matrix2(theta1: any,
     transform: Intensity of the light at CCD
     """
 
-    t_1 = MullerOperators(theta1, retardance1, 'LP_+45')
-    w_1 = t_1.general_wave_plate()                                      # Wave plate transfer matrix at specified angle
+    t_1 = MullerOperators(theta1, retardance1, 'LP_0')
+    w_1 = t_1.general_wave_plate()                              # Wave plate transfer matrix at specified angle
     p_1 = t_1.linear_polarizer()                                # Linear polarizer transfer matrix at specified angle
-    t_2 = MullerOperators(theta2, retardance2, 'LP_-45')
-    w_2 = t_2.general_wave_plate()                                      # Wave plate transfer matrix at specified angle
+    t_2 = MullerOperators(theta2, retardance2, 'LP_90')
+    w_2 = t_2.general_wave_plate()                              # Wave plate transfer matrix at specified angle
     p_2 = t_2.linear_polarizer()                                # Linear polarizer transfer matrix at specified angle
 
     s_in = np.array([1, 0, 0, 0])
-    s_out = p_2 @ w_2 @ w_1 @ p_1 @ incident
-
-    g = w_1 @ p_1 @ s_in
-    a = s_in @ p_2 @ w_2
 
     mueller_sample = np.array([[1, 0, 0, 0],
                               [0, 1, 0, 0],
                               [0, 0, 1, 0],
                               [0, 0, 0, 1]], np.float64)
-    p = np.kron(g, a)
-    b = (np.reshape(mueller_sample, 16))
-    s_out = np.dot(p, b)
 
-    return s_out
+    g = w_1 @ p_1 @ s_in
+    a = p_2 @ w_2
+    p = np.kron(g, a[0][:])
+
+    b = (np.reshape(mueller_sample, 16))
+
+    return np.dot(p, b)
 
 
 def generate_rotation(t: np.ndarray,

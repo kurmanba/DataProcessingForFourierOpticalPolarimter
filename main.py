@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 
 t_experiment, sampling_rate, s_0, omega_1, omega_2 = extract_parameters()                       # Extract parameters
-ratios = np.arange(1, 40, 1)
+ratios = np.arange(1, 5, 1)
 store_results = defaultdict()
 store_results_noise = defaultdict()
 
@@ -15,10 +15,10 @@ for i in tqdm(ratios):
     store_results[i], t = run_simulation2(t_experiment, sampling_rate, s_0, omega_1, omega_1*i)
 
 
-for i in ratios:
-    plt.plot(t, store_results[i] + 0.125*i)
+#for i in ratios:
+ #   plt.plot(t, store_results[i] + 0.125*i)
 
-plt.show()
+# plt.show()
 
 plot_ratios(t, 5, store_results)
 

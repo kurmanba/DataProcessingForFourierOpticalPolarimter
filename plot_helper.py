@@ -212,7 +212,7 @@ def plot_ratios(t: np.ndarray,
 
     # plt.stem(X)
     plt.xlabel("Time [s]")
-    plt.savefig("ratios1.jpeg")
+    plt.savefig("ratios2.jpeg")
     plt.show()
 
 
