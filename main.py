@@ -41,20 +41,20 @@ print(optimized.x[9])
 plot_mc_fits(optimized.x, leastsq_x[0], t, store_results, harmonics)
 
 
-z = []
-z1 = []
-z2 = []
-
-for i in tqdm(range(0, 30000)):
-
-    z.append(drr_norm_measure_padua(np.array([90, 90])))
-    z2.append(drr_norm_measure(np.array([3, 10, 90, 90, 21])))
-
-fontsize = 10
-plt.hist(z2, bins=300, label="Linear Increments with ratio")
-plt.hist(z, bins=300, label="Padua Interpolation Points")
-plt.xlim(0, 400)
-plt.legend(loc='upper right')
-plt.xlabel("Data", fontsize=fontsize)
-plt.ylabel("Occurrence", fontsize=fontsize)
-plt.show()
+# z = []
+# z1 = []
+# z2 = []
+#
+# for i in tqdm(range(0, 30000)):
+#
+#     z.append(drr_norm_measure_padua(np.array([90, 90])))
+#     z2.append(drr_norm_measure(np.array([3, 10, 90, 90, 21])))
+#
+# fontsize = 10
+# plt.hist(z2, bins=300, label="Linear Increments with ratio")
+# plt.hist(z, bins=300, label="Padua Interpolation Points")
+# plt.xlim(0, 400)
+# plt.legend(loc='upper right')
+# plt.xlabel("Data", fontsize=fontsize)
+# plt.ylabel("Occurrence", fontsize=fontsize)
+# plt.show()

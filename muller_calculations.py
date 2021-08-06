@@ -42,7 +42,7 @@ class MullerOperators:
                         [0, gwp11, gwp12, gwp13],
                         [0, gwp21, gwp22, gwp23],
                         [0, gwp31, gwp32, gwp33]], np.float64)
-        return gwp*0.5
+        return gwp
 
     def rotation_matrix(self, sign) -> np.ndarray:
 
