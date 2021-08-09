@@ -66,24 +66,3 @@ def padua_points_2(n: int,
 
     return pad1.ravel(order='F')[ix], pad2.ravel(order='F')[ix]
 
-
-class LagrangePoly:
-
-    def __init__(self,
-                 x,
-                 y):
-        self.n = len(x)
-        self.x = np.array(x)
-        self.y = np.array(y)
-
-    def basis(self,
-              x,
-              j):
-        b = [(x - self.x[m]) / (self.x[j] - self.x[m])
-             for m in range(self.n) if m != j]
-        return np.prod(b, axis=0) * self.y[j]
-
-    def interpolate(self,
-                    x):
-        b = [self.basis(x, j) for j in range(self.n)]
-        return np.sum(b, axis=0)

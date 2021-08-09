@@ -51,8 +51,6 @@ def modulation_matrix2(theta1: any,                                            #
     # p_2 = r_2 @ p_2 @ r_3
 
     # Stoke Vectors
-    # s_center = np.array([1, np.sqrt(1/3), np.sqrt(1/3), np.sqrt(1/3)])
-    # s_test = np.array([1, 1, 1, 1])
     s_in = np.array([1, 0, 0, 0])
 
     g = w_1 @ p_1 @ s_in
@@ -68,7 +66,6 @@ def map_performance(ratio: float,
     theta_1 = np.linspace(0, 180, angular_increments)
     theta_2 = np.linspace(0, 180, angular_increments)
 
-    X, Y = np.meshgrid(theta_1, theta_2)
     z = np.zeros((len(theta_1), len(theta_2)))
 
     determination = 120
@@ -115,14 +112,14 @@ def map_performance(ratio: float,
         else:
             condition.append(200)
 
+
+    X, Y = np.meshgrid(theta_1, theta_2)
     plt.plot(theta_1i, condition)
     # plt.savefig("condsss_vs_retardance_symmetric{}_{}.jpeg".format(ratio, determination))
     fig, ax = plt.subplots(1, 1)
     cp = ax.contourf(X, Y, z, cmap='jet')
     c = fig.colorbar(cp)
     c.set_ticks([])
-    # plt.contourf(X, Y, z, 5, alpha=0.75, cmap='jet')
-    # plt.contour(X, Y, z, 3, colors='black', linewidth=0.5)
     ax.set_title('PSA vs PSG at modulation ratio = {}'.format(ratio))
     ax.set_xlabel('retardance of PSG [deg]')
     ax.set_ylabel('retardance of PSA [deg]')
@@ -130,7 +127,7 @@ def map_performance(ratio: float,
     plt.show()
 
 
-def drr_norm_measure(v: np.ndarray) -> float:                                  # optimization of performance parameters
+def drr_norm_measure(v: np.ndarray) -> float:                                   # optimization of performance parameters
 
     ratio = v[0]
     omega1 = v[1]
@@ -191,6 +188,3 @@ def drr_norm_measure_padua(v: np.ndarray) -> float:                    # optimiz
         h = np.vstack((h, modulation_matrix2(t1[q], t2[q], retardance1, retardance2)))
 
     return np.linalg.norm(h, np.inf) * np.linalg.norm(np.linalg.pinv(h), np.inf)
-
-
-

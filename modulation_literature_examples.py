@@ -3,6 +3,7 @@ from numpy.linalg import inv
 from muller_calculations import MullerOperators
 
 
+# This section is implementation of some examples of transfer matrices available in the literature (can be ignored)
 def modulation_matrix(theta1: any,
                       theta2: any,
                       retardance1: any,
@@ -88,14 +89,6 @@ def modulation_matrix2(theta1: any,                                     # From p
     p = np.kron(np.transpose(g), a)
 
     return p
-    # try:
-    #     inverse = np.linalg.inv(p)
-    # except np.linalg.LinAlgError:
-    #     print("Not Invertible")
-    #     return -100
-    # else:
-    #     # print("Invertible")
-    #     return np.linalg.norm(p, 'fro') * np.linalg.norm(np.linalg.inv(p), 'fro')
 
 
 def modulation_matrix3(theta1: any,                                 # From publication

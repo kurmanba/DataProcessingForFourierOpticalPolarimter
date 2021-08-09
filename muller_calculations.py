@@ -120,10 +120,10 @@ def transfer_matrix(theta1: any,
     """
 
     t_1 = MullerOperators(theta1, retardance1, 'LP_0')
-    w_1 = t_1.general_wave_plate()                                      # Wave plate transfer matrix at specified angle
+    w_1 = t_1.general_wave_plate()                              # Wave plate transfer matrix at specified angle
     p_1 = t_1.linear_polarizer()                                # Linear polarizer transfer matrix at specified angle
     t_2 = MullerOperators(theta2, retardance2, 'LP_90')
-    w_2 = t_2.general_wave_plate()                                      # Wave plate transfer matrix at specified angle
+    w_2 = t_2.general_wave_plate()                              # Wave plate transfer matrix at specified angle
     p_2 = t_2.linear_polarizer()                                # Linear polarizer transfer matrix at specified angle
 
     s_out = p_2 @ w_2 @ w_1 @ p_1 @ incident
@@ -243,7 +243,7 @@ def run_simulation(t_experiment: float,
     return ccd_s, t_array
 
 
-def run_simulation2(t_experiment: float,                       # This simulation is run on orthogonality transfer matrix
+def run_simulation2(t_experiment: float,                      # This simulation is run on orthogonality transfer matrix
                     sampling_rate: float,
                     s_0: np.ndarray,
                     omega_1: float,

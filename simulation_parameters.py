@@ -15,7 +15,7 @@ def extract_parameters():
     retardance_wp_2 = 71                                                  # Phase shift induced by optics (wave plate)
     # 4. Characteristics of optical setup (active elements)
     # ______________________________________________________
-    omega_1 = 10                                                         # Angular speed of wave plate [deg/second]
+    omega_1 = 10                                                          # Angular speed of wave plate [deg/second]
     omega_2 = 15                                                          # Angular speed of wave plate [deg/second]
     # 5. Additional Parameters to add later on
     # ______________________________________________________
