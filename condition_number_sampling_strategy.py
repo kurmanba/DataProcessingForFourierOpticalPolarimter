@@ -1,16 +1,14 @@
 import matplotlib.pyplot as plt
+
 from modulation import *
 
 
 def condition_number(theta1: np.ndarray,                                          # optimization of interpolation points
                      theta2: np.ndarray) -> float:
 
-    t1 = theta1
-    t2 = theta2
-
-    h = modulation_matrix2(t1[0], t2[0], 90, 90)
-    for q in range(0, len(t1)):
-        h = np.vstack((h, modulation_matrix2(t1[q], t2[q], 90, 90)))
+    h = modulation_matrix2(theta1[0], theta2[0], 90, 90)
+    for q in range(1, len(theta1)):
+        h = np.vstack((h, modulation_matrix2(theta1[q], theta2[q], 90, 90)))
 
     return np.linalg.norm(h, np.inf) * np.linalg.norm(np.linalg.pinv(h), np.inf)
 
@@ -27,28 +25,32 @@ def generate_linear_sampling_angles(sampling_points: int,
 
 
 z = np.arange(1, 10, 1)
-j = np.arange(5, 15, 1)
-
-# for i in z:
-#     x, y, omega1, omega2 = generate_linear_sampling_angles(16, i)
-#     print(condition_number(x, y))
+j = np.arange(5, 13, 1)
+points = np.arange(16, 91, 1)
+l = []
+for i in points:
+    x, y, omega1, omega2 = generate_linear_sampling_angles(i, 20)
+    l.append(condition_number(x, y))
+    # print(condition_number(x, y))
 
 for i in j:
     x, y = padua_points_2(i)
-    print(condition_number(x, y))
+    print(condition_number(x, y), len(x))
 
-t1, t2 = padua_points_2(8)
-
-cond_linear = condition_number(x, y)
-cond_padua = condition_number(t1, t2)
-
-print(cond_linear, cond_padua)
-
-print(len(t1), len(t2))
-
-plt.scatter(x, y)
-plt.scatter(t1, t2)
+plt.plot(l)
 plt.show()
+# t1, t2 = padua_points_2(8)
+#
+# cond_linear = condition_number(x, y)
+# cond_padua = condition_number(t1, t2)
+#
+# print(cond_linear, cond_padua)
+#
+# print(len(t1), len(t2))
+#
+# plt.scatter(x, y)
+# plt.scatter(t1, t2)
+# plt.show()
 
 
 
